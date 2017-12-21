@@ -11,7 +11,6 @@ exports.headers = {
 };
 
 exports.serveAssets = function(res, asset, callback) {
-
   fs.readFile(archive.paths.archivedSites + asset, function(error, file) {
     if (error) {
       res.writeHead(404, exports.headers);

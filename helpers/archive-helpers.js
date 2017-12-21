@@ -11,7 +11,7 @@ var _ = require('underscore');
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
-  archivedSites: path.join(__dirname, '../archives/sites'),
+  archivedSites: path.join(__dirname, '../web/archives/sites'),
   list: path.join(__dirname, '../web/archives/sites.txt')
 };
 
@@ -26,27 +26,47 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-  console.log('called');
-  var contents = [];
-  contents.push(fs.readFileSync(exports.paths.list));
-  contents = Buffer.concat(contents).toString();
-  return contents;
-};
-
-exports.isUrlInList = function(url, callback) {
-};
-
-exports.addUrlToList = function(url, callback) {
-  console.log('list ', exports.paths.list);
-
-  var toAppend = url + '\n';
-  fs.appendFile(exports.paths.list, toAppend, function() {
-    console.log('finished appending ' + url + ' to ' + exports.paths.list);
+  fs.readFile(exports.paths.list, 'utf8', function(err, data) {
+    callback(data.split('\n'));
   });
 };
 
+exports.isUrlInList = function(url, callback) {
+  var result = false;
+  exports.readListOfUrls(function(returnedData) {
+    returnedData.forEach(entry => {
+      if (url === entry) {
+        result = true;
+      }
+    });
+    callback(result);
+  }); 
+};
+
+exports.addUrlToList = function(url, callback) {
+  var toAppend = url + '\n';
+  fs.appendFile(exports.paths.list, toAppend, (err) => {
+    if (!err) {
+      console.log('finished appending ' + url + ' to ' + exports.paths.list);
+      callback();
+    }
+  });
+
+};
+
 exports.isUrlArchived = function(url, callback) {
-  // depends how we handle sites.txt - maybe we just keep a separate list of requested URLs which have been archived, or...
+  var result = false;
+  fs.readdir(exports.paths.archivedSites, function(error, files) {
+    files.forEach(file => {
+      if (file === url) {
+        result = true;
+      }
+    });
+    
+    callback(result);
+    return result;
+  });
+  
 };
 
 exports.downloadUrls = function(urls) {
@@ -54,6 +74,8 @@ exports.downloadUrls = function(urls) {
   // download them
 };
 
+exports.appendUrl = function(url, callback) {
+};
 
 
 
