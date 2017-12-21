@@ -14,18 +14,13 @@ exports.handleRequest = function (req, res) {
     }).on('end', () => {
       var requestedUrl = Buffer.concat(requestedUrlBuffer).toString();
       requestedUrl = requestedUrl.split('=')[1];
-      archive.readListOfUrls(requestedUrl);
-      // archive.addUrlToList(requestedUrl, function() {
-      //   console.log('sent ' + requestedUrl);
-      // });
-      
     });
 
   }
 
   if (req.method === 'GET') {
     if (req.url === '/') {
-      helper.serveAssets(res, '/index.html', function() {
+      helper.getIndex(res, '/index.html', function() {
         console.log('file served');
       });
     } else {

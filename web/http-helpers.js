@@ -12,7 +12,7 @@ exports.headers = {
 
 exports.serveAssets = function(res, asset, callback) {
 
-  fs.readFile(archive.paths.siteAssets + asset, function(error, file) {
+  fs.readFile(archive.paths.archivedSites + asset, function(error, file) {
     if (error) {
       res.writeHead(404, exports.headers);
       res.end('couldnt find file');
@@ -22,6 +22,20 @@ exports.serveAssets = function(res, asset, callback) {
     }
   });
 };
+
+exports.getIndex = function(res, asset) {
+  fs.readFile(archive.paths.siteAssets + asset, function(error, file) {
+    if (error) {
+      console.log(error);
+      res.writeHead(404, exports.headers);
+      res.end('couldnt find file');
+    } else {
+      res.writeHead(200, exports.headers);
+      res.end(file);
+    }
+  });
+};
+
 
 
 
