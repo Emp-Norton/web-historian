@@ -12,7 +12,7 @@ var _ = require('underscore');
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  list: path.join(__dirname, '../web/archives/sites.txt')
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -26,16 +26,37 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+  console.log('called');
+  var contents = [];
+  contents.push(fs.readFileSync(exports.paths.list));
+  contents = Buffer.concat(contents).toString();
+  return contents;
 };
 
 exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
+  console.log('list ', exports.paths.list);
+
+  var toAppend = url + '\n';
+  fs.appendFile(exports.paths.list, toAppend, function() {
+    console.log('finished appending ' + url + ' to ' + exports.paths.list);
+  });
 };
 
 exports.isUrlArchived = function(url, callback) {
+  // depends how we handle sites.txt - maybe we just keep a separate list of requested URLs which have been archived, or...
 };
 
 exports.downloadUrls = function(urls) {
+// check list for requested url that haven't been downloaded
+  // download them
 };
+
+
+
+
+
+
+
