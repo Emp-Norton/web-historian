@@ -10,32 +10,48 @@ exports.headers = {
   'Content-Type': 'text/html'
 };
 
-exports.serveAssets = function(res, asset, callback) {
-  fs.readFile(archive.paths.archivedSites + asset, function(error, file) {
-    if (error) {
-      res.writeHead(404, exports.headers);
-      res.end('couldnt find file');
+exports.serveAssets = function(response, asset, callback) {
+  fs.readFile(archive.paths.siteAssets + asset, 'utf8', function(err, data){
+    if (err) { 
+      fs.readFile(archive.paths.archivedSites + asset, 'utf8', function(err, data){
+        if (err){ // not in eihter location
+          callback ? callback() : exports.send404(res);
+        } else { // found in archives
+          exports.sendResponse(response, data);
+        }
+      })
     } else {
-      res.writeHead(200, exports.headers);
-      res.end(file);
-    }
+      exports.sendResponse(response, data);
+    } 
   });
 };
 
-exports.getIndex = function(res, asset) {
-  fs.readFile(archive.paths.siteAssets + asset, function(error, file) {
-    if (error) {
-      console.log(error);
-      res.writeHead(404, exports.headers);
-      res.end('couldnt find file');
-    } else {
-      res.writeHead(200, exports.headers);
-      res.end(file);
-    }
+exports.sendRedirect = function(response, location, status) {
+  status = status || 302;
+  response.writeHead(status, {Location: location});
+  response.end()
+}
+
+exports.sendResponse = function(response, asset, status){ // nearly the same as serveAssets?
+  status = status || 200;
+  response.writeHead(status, exports.headers);
+  response.end(asset);
+}
+
+exports.send404 = function(response) {
+  exports.sendResponse(response, '404: Page not found', 404);
+}
+
+exports.collectData = function(request, callback) {
+  var data = '';
+  request.on('data', function(chunk){
+    console.log('chunk ', chunk)
+    data += chunk
   });
-};
-
-
-
+  console.log('data ', data)
+  request.on('end', function(){
+    callback(data);
+  })
+}
 
 // As you progress, keep thinking about what helper functions you can put here!

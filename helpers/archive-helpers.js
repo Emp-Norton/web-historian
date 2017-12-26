@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var request = require('request');
 var _ = require('underscore');
 
 /*
@@ -27,7 +28,7 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
-    callback(data.split('\n'));
+    if (callback) callback(data.toString().split('\n'));
   });
 };
 
@@ -74,8 +75,6 @@ exports.downloadUrls = function(urls) {
   // download them
 };
 
-exports.appendUrl = function(url, callback) {
-};
 
 
 
